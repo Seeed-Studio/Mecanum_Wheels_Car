@@ -18,6 +18,7 @@ void setup()
 {
   adc_init();
   RFBEE.init();
+  powerInit();
 }
 
 void loop()
@@ -53,4 +54,19 @@ uint16_t ReadADC(uint8_t channel)
    ADCSRA |= (1<<ADSC);             //Starts a new conversion
    while(ADCSRA & (1<<ADSC));       //Wait until the conversion is done
    return ADCW;                     //Returns the ADC value of t
+}
+
+void powerInit()
+{
+  pinMode(16, OUTPUT);//power ctrl 1
+  pinMode(17, OUTPUT);//power ctrl 2
+  digitalWrite(16, LOW);//set to low
+  digitalWrite(17, LOW);//set to low
+  r_val = x_val = y_val = 0;
+  while((abs(r_val-512) > 30) || (abs(x_val-512) > 30) || (abs(y_val-512) > 30)){
+    r_val = ReadADC(1);
+    x_val = ReadADC(4);
+    y_val = ReadADC(5);   
+    delay(100); 
+  }  
 }
